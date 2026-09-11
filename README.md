@@ -1,20 +1,28 @@
 # Fold Flip Effect
 
-A dependency-free two-sided fold/flip effect built with plain HTML, CSS, and JavaScript — no React, no build step. Tap a panel to open it, tap again to fold it back, like a fold-phone hinge. Drop the three files into any project and it works.
+A dependency-free card-style fold/flip effect built with plain HTML, CSS, and JavaScript — no React, no build step. Tap the cover to open it and reveal an inside-left/inside-right spread, tap again to close it back to the cover, like opening a greeting card. Drop the three files into any project and it works.
 
 ## Usage
 
 Copy `index.html`, `style.css`, `script.js`, and the `assets/` folder into your project (or just `style.css` + `script.js` + your own markup and images).
 
-Both faces are real `<img>` elements written directly in the HTML — **not** inserted by JavaScript — so the browser starts loading both immediately:
+Every page is a real `<img>` written directly in the HTML — **not** inserted by JavaScript — so the browser starts loading all three immediately. The cover sits alone in the right slot at rest (nothing to its left, like the outside of a shut card); opening it reveals the inside-left and inside-right pages as a spread:
 
 ```html
 <div class="fold-flip" id="fold">
   <div class="fold-flip__glow"></div>
   <div class="fold-flip__stage">
-    <div class="fold-flip__panel">
-      <div class="fold-flip__face fold-flip__face--front"><img src="assets/front.webp" alt=""></div>
-      <div class="fold-flip__face fold-flip__face--back"><img src="assets/back.webp" alt=""></div>
+    <div class="fold-flip__leaf fold-flip__leaf--right-slot">
+      <div class="fold-flip__leaf-face fold-flip__leaf-face--front"><img src="assets/front.webp" alt=""></div>
+      <div class="fold-flip__leaf-face fold-flip__leaf-face--back"></div>
+    </div>
+    <div class="fold-flip__leaf fold-flip__leaf--left-slot" hidden>
+      <div class="fold-flip__leaf-face fold-flip__leaf-face--front"><img src="assets/inside-left.webp" alt=""></div>
+      <div class="fold-flip__leaf-face fold-flip__leaf-face--back"></div>
+    </div>
+    <div class="fold-flip__leaf fold-flip__leaf--right-slot" hidden>
+      <div class="fold-flip__leaf-face fold-flip__leaf-face--front"><img src="assets/inside-right.webp" alt=""></div>
+      <div class="fold-flip__leaf-face fold-flip__leaf-face--back"></div>
     </div>
     <button class="fold-flip__zone" aria-label="Open or close"></button>
   </div>
@@ -24,14 +32,17 @@ Both faces are real `<img>` elements written directly in the HTML — **not** in
 ```js
 new FoldFlip(document.getElementById('fold'), {
   flipSound: 'assets/page-flip.mp3', // optional
+  duration: 650, // optional, ms
 });
 ```
 
-Tap the panel to open it (front → back), tap again to close it (back → front).
+Tap anywhere on the fold to open it (cover → spread), tap again to close it (spread → cover).
 
 ## How it works
 
-There's exactly one panel. Its front and back faces sit on the same element, hinged at its own left edge (`rotateY`, `backface-visibility: hidden`); toggling a class rotates it 180° one way to open and 180° back to close. Since both faces are real, already-loaded images on that one element rather than separate elements being swapped or revealed, there's no timing edge case to get wrong — nothing to reveal underneath, nothing that can show up mid-flip as a loading flash.
+Every page is a real `<img>` already sitting in the DOM, not created or given a `src` by JavaScript — the browser's own preload scanner discovers and starts fetching all three as soon as it parses the HTML, well before `script.js` even downloads.
+
+There are exactly two states: closed (just the cover, single-page width, alone in the right slot) and open (a left/right spread). Toggling always animates exactly one page — hinged at the fold's true center (`rotateY`) — while the opposite page never moves. Each leaf's back face is set at init to the exact page its own turn reveals on the far side, reusing that page's own cached image rather than a plain color, so real artwork grows in as it turns instead of a blank card. There are no shadows or shading anywhere — flat, clean faces by design.
 
 ## Local dev
 

@@ -11,21 +11,30 @@
     <div class="intro">
       <p class="eyebrow">A Dependency-Free Effect</p>
       <h1>Fold Flip</h1>
-      <p>A two-sided fold/flip effect built with plain HTML, CSS, and JavaScript. Tap the panel to open it, tap again to fold it back.</p>
+      <p>A card-style fold/flip effect built with plain HTML, CSS, and JavaScript. Tap the cover to open it and reveal the inside spread, tap again to close it.</p>
     </div>
 
     <div class="fold-flip" id="fold">
       <div class="fold-flip__glow"></div>
       <div class="fold-flip__stage">
         <!--
-          Both faces are real <img> elements written directly into the
-          page, not inserted by JavaScript, so the browser starts loading
-          both immediately. There's only ever this one panel — opening and
-          closing just rotates it 180° back and forth.
+          Every page is a real <img> written directly into the page, not
+          inserted by JavaScript, so the browser starts loading all three
+          immediately. The cover sits alone on the right at rest (nothing
+          to its left, like the outside of a closed card); opening it
+          reveals the inside-left and inside-right pages as a spread.
         -->
-        <div class="fold-flip__panel">
-          <div class="fold-flip__face fold-flip__face--front"><img src="assets/front.webp" alt=""></div>
-          <div class="fold-flip__face fold-flip__face--back"><img src="assets/back.webp" alt=""></div>
+        <div class="fold-flip__leaf fold-flip__leaf--right-slot">
+          <div class="fold-flip__leaf-face fold-flip__leaf-face--front"><img src="assets/front.webp" alt=""></div>
+          <div class="fold-flip__leaf-face fold-flip__leaf-face--back"></div>
+        </div>
+        <div class="fold-flip__leaf fold-flip__leaf--left-slot" hidden>
+          <div class="fold-flip__leaf-face fold-flip__leaf-face--front"><img src="assets/inside-left.webp" alt=""></div>
+          <div class="fold-flip__leaf-face fold-flip__leaf-face--back"></div>
+        </div>
+        <div class="fold-flip__leaf fold-flip__leaf--right-slot" hidden>
+          <div class="fold-flip__leaf-face fold-flip__leaf-face--front"><img src="assets/inside-right.webp" alt=""></div>
+          <div class="fold-flip__leaf-face fold-flip__leaf-face--back"></div>
         </div>
         <button class="fold-flip__zone" aria-label="Open or close"></button>
       </div>
