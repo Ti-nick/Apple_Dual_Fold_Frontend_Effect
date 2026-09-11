@@ -80,28 +80,6 @@ body {
   perspective: 2200px;
 }
 
-/* fixed gutter shadow marking the spine between the two pages */
-.book-flip__spine {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 20px;
-  height: 100%;
-  margin-left: -10px;
-  pointer-events: none;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.28) 0%,
-    rgba(0, 0, 0, 0.06) 40%,
-    rgba(0, 0, 0, 0.06) 60%,
-    rgba(0, 0, 0, 0.28) 100%
-  );
-}
-
-.book-flip__spine[hidden] {
-  display: none;
-}
-
 /*
  * Every page is a real, always-present <img> — each sits in a fixed slot
  * (left or right of the spine), so which direction it turns and which

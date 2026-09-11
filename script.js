@@ -74,7 +74,6 @@ class BookFlip {
     this.index = 0;
     this.animating = false;
 
-    this.spine = root.querySelector('.book-flip__spine');
     this.prevBtn = root.querySelector('.book-flip__zone--prev');
     this.nextBtn = root.querySelector('.book-flip__zone--next');
 
@@ -119,7 +118,6 @@ class BookFlip {
       if (left) left.hidden = left !== spread.left;
       if (right) right.hidden = right !== spread.right;
     });
-    this.spine.hidden = !(spread.left && spread.right);
   }
 
   updateControls() {
@@ -176,7 +174,6 @@ class BookFlip {
       this.wait(this.duration * 0.55).then(() => {
         if (oppositeOld) oppositeOld.hidden = true;
         if (oppositeNext) oppositeNext.hidden = false;
-        this.spine.hidden = !(next.left && next.right);
 
         this.wait(this.duration * 0.45).then(() => {
           turningLeaf.classList.remove('book-flip__leaf--turning');

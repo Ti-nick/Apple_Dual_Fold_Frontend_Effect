@@ -29,7 +29,6 @@ Write every page as a real `<img>` directly in the HTML — **not** inserted by 
       <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/back-cover.webp" alt=""></div>
       <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
     </div>
-    <div class="book-flip__spine" hidden></div>
     <button class="book-flip__zone book-flip__zone--prev" aria-label="Previous page"></button>
     <button class="book-flip__zone book-flip__zone--next" aria-label="Next page"></button>
   </div>
