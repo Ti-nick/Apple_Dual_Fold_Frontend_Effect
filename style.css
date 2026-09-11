@@ -60,7 +60,6 @@ body {
 /* ---------- Book flip component ---------- */
 
 .book-flip {
-  --page-w: 320px;
   position: relative;
   width: min(640px, 90vw);
   aspect-ratio: 8 / 5;
@@ -103,12 +102,6 @@ body {
 .book-flip__page--right {
   left: 50%;
   border-radius: 0 6px 6px 0;
-}
-
-.book-flip__page--single {
-  left: 0;
-  width: 100%;
-  border-radius: 6px;
 }
 
 .book-flip__page[hidden] {
