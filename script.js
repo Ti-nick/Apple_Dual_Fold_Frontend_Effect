@@ -14,6 +14,10 @@
  * currently on that side; its back face is a plain paper texture, and the
  * next spread is swapped in underneath while the leaf is edge-on (and
  * therefore invisible) at the midpoint of the turn.
+ *
+ * Every page image starts loading up front (see preloadAll), so by the
+ * time a turn reveals one it's already cached instead of only starting
+ * to fetch it mid-flip.
  */
 class BookFlip {
   /**
@@ -53,6 +57,7 @@ class BookFlip {
     this.nextBtn.addEventListener('click', () => this.next());
 
     this.render(this.spreads[0]);
+    this.preloadAll();
     this.updateControls();
   }
 
@@ -64,6 +69,16 @@ class BookFlip {
     if (spread.right) this.rightImg.src = spread.right;
 
     this.spine.hidden = !(spread.left && spread.right);
+  }
+
+  // Warms the browser's cache for every page up front, so each one is
+  // already loaded by the time a turn reveals it.
+  preloadAll() {
+    this.spreads.forEach((spread) => {
+      [spread.left, spread.right].forEach((src) => {
+        if (src) new Image().src = src;
+      });
+    });
   }
 
   updateControls() {
@@ -138,19 +153,19 @@ class BookFlip {
 
 document.addEventListener('DOMContentLoaded', () => {
   new BookFlip(document.getElementById('book'), {
-    cover: 'assets/cover.png',
-    backCover: 'assets/back-cover.png',
+    cover: 'assets/cover.webp',
+    backCover: 'assets/back-cover.webp',
     pages: [
-      'assets/page-01.png',
-      'assets/page-02.png',
-      'assets/page-03.png',
-      'assets/page-04.png',
-      'assets/page-05.png',
-      'assets/page-06.png',
-      'assets/page-07.png',
-      'assets/page-08.png',
-      'assets/page-09.png',
-      'assets/page-10.png',
+      'assets/page-01.webp',
+      'assets/page-02.webp',
+      'assets/page-03.webp',
+      'assets/page-04.webp',
+      'assets/page-05.webp',
+      'assets/page-06.webp',
+      'assets/page-07.webp',
+      'assets/page-08.webp',
+      'assets/page-09.webp',
+      'assets/page-10.webp',
     ],
     flipSound: 'assets/page-flip.mp3',
   });

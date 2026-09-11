@@ -25,9 +25,9 @@ Copy `index.html`, `style.css`, `script.js`, and the `assets/` folder into your 
 
 ```js
 new BookFlip(document.getElementById('book'), {
-  cover: 'assets/cover.png',
-  backCover: 'assets/back-cover.png',
-  pages: ['page-01.png', 'page-02.png', /* ...in reading order, pairs become spreads */],
+  cover: 'assets/cover.webp',
+  backCover: 'assets/back-cover.webp',
+  pages: ['page-01.webp', 'page-02.webp', /* ...in reading order, pairs become spreads */],
   flipSound: 'assets/page-flip.mp3', // optional
 });
 ```
