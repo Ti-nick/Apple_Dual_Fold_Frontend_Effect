@@ -27,10 +27,20 @@
  * replacement page (e.g. the new right page, turning right) is shown
  * immediately, underneath the turning leaf, the instant a turn starts —
  * it's what a real page turn looks like anyway: the next page is already
- * there, emerging as the old one lifts away. Only the *opposite* side
- * (which the turning leaf's blank paper back sweeps over later) still
- * needs its swap timed, and now against the fixed easing curve below
- * rather than an arbitrary one.
+ * there, emerging as the old one lifts away.
+ *
+ * The *opposite* side works differently, because nothing is turning
+ * there yet — showing its replacement immediately would just pop with
+ * no cover at all. Each leaf's back face is set (see wireBackFaces) to
+ * the exact page that turn will reveal on the far side — the same image
+ * that page's own leaf already shows, reused from cache, not a generic
+ * blank card — so as the leaf turns past 90° that's what the viewer
+ * already sees, real artwork growing in rather than blank paper. The
+ * underlying static leaf is still swapped underneath once the turning
+ * leaf has had time to start covering it, so it's in place by the time
+ * the leaf finishes and is hidden — but because both now show the same
+ * image, that swap's exact timing is no longer something the eye can
+ * catch.
  *
  * A downloaded image isn't necessarily decoded yet — the browser can
  * still take a moment to turn the bytes into a paintable bitmap the
@@ -75,11 +85,32 @@ class BookFlip {
       this.decoded.set(leaf, img && img.decode ? img.decode().catch(() => {}) : Promise.resolve());
     });
 
+    this.wireBackFaces(leaves);
+
     this.prevBtn.addEventListener('click', () => this.turn(-1));
     this.nextBtn.addEventListener('click', () => this.turn(1));
 
     this.showOnly(this.spreads[0]);
     this.updateControls();
+  }
+
+  // Gives each leaf's back face the exact page its own turn will reveal on
+  // the far side: a right-slot leaf turns forward, landing on the left, so
+  // its back face gets the *next* leaf's image (the new left page); a
+  // left-slot leaf turns backward onto the right, so it gets the
+  // *previous* leaf's image. Reuses the neighbor's own <img>'s src, so the
+  // browser serves it from cache rather than fetching anything extra.
+  wireBackFaces(leaves) {
+    leaves.forEach((leaf, i) => {
+      const isRightSlot = leaf.classList.contains('book-flip__leaf--right-slot');
+      const neighbor = leaves[isRightSlot ? i + 1 : i - 1];
+      const neighborImg = neighbor && neighbor.querySelector('img');
+      if (!neighborImg) return;
+      const img = document.createElement('img');
+      img.src = neighborImg.src;
+      img.alt = '';
+      leaf.querySelector('.book-flip__leaf-face--back').appendChild(img);
+    });
   }
 
   // Shows exactly the leaves belonging to `spread`, hiding every other one.
@@ -138,11 +169,10 @@ class BookFlip {
         }
       }
 
-      // Just past the halfway point, the turning leaf's blank paper back has
-      // swept across covering the opposite side, so this swap happens
-      // underneath it — slightly past the midpoint rather than exactly on
-      // it, so the swap lands after the leaf has already started covering
-      // that side rather than right at its thinnest, edge-on instant.
+      // Just past the halfway point, the turning leaf's back face (already
+      // showing this same page — see wireBackFaces) has swept across
+      // covering the opposite side, so swapping the static leaf underneath
+      // now is invisible either way.
       this.wait(this.duration * 0.55).then(() => {
         if (oppositeOld) oppositeOld.hidden = true;
         if (oppositeNext) oppositeNext.hidden = false;
