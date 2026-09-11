@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Flip Effect</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="intro">
+      <p class="eyebrow">A Dependency-Free Effect</p>
+      <h1>Book Flip</h1>
+      <p>A page-flip book effect built with plain HTML, CSS, and JavaScript. Click either side of the book to turn a page.</p>
+    </div>
+
+    <div class="book-flip" id="book">
+      <div class="book-flip__glow"></div>
+      <div class="book-flip__stage">
+        <img class="book-flip__page book-flip__page--left" alt="">
+        <img class="book-flip__page book-flip__page--right" alt="">
+        <img class="book-flip__page book-flip__page--single" alt="">
+        <div class="book-flip__leaf" hidden>
+          <div class="book-flip__leaf-face book-flip__leaf-face--front"></div>
+          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
+        </div>
+        <button class="book-flip__zone book-flip__zone--prev" aria-label="Previous page"></button>
+        <button class="book-flip__zone book-flip__zone--next" aria-label="Next page"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
