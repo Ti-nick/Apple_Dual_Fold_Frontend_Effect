@@ -16,10 +16,21 @@
  * the same spine position as any interior page.
  *
  * Turning a page always animates exactly one page — hinged at the book's
- * true center (the spine) — while the opposite page never moves. Each
- * leaf's back face is a plain paper texture, and the next spread is
- * revealed underneath while the leaf is edge-on (and therefore invisible)
- * at the midpoint of the turn.
+ * true center (the spine) — while the opposite page never moves. A 3D
+ * rotateY doesn't just swap content at 90°, though: as the turning leaf
+ * foreshortens toward edge-on, its rendered width shrinks well before
+ * that, and past 90° it's showing its back face while still narrow — so
+ * anything relying on a fixed "reveal at the halfway point" timer either
+ * exposes a gap (this page's own background showing through) or reveals
+ * too early/late, since easing makes the real edge-on moment land at a
+ * different point than the wall-clock midpoint. So the same-side
+ * replacement page (e.g. the new right page, turning right) is shown
+ * immediately, underneath the turning leaf, the instant a turn starts —
+ * it's what a real page turn looks like anyway: the next page is already
+ * there, emerging as the old one lifts away. Only the *opposite* side
+ * (which the turning leaf's blank paper back sweeps over later) still
+ * needs its swap timed, and now against the fixed easing curve below
+ * rather than an arbitrary one.
  *
  * A downloaded image isn't necessarily decoded yet — the browser can
  * still take a moment to turn the bytes into a paintable bitmap the
@@ -106,35 +117,44 @@ class BookFlip {
     const next = this.spreads[targetIndex];
     const forward = direction === 1;
     const turningLeaf = forward ? current.right : current.left;
+    const sameSideNext = forward ? next.right : next.left;
+    const oppositeOld = forward ? current.left : current.right;
+    const oppositeNext = forward ? next.left : next.right;
 
-    turningLeaf.classList.add('book-flip__leaf--turning');
+    this.whenDecoded(next).then(() => {
+      // Sits underneath the turning leaf from the very start, so it's what
+      // shows through as that leaf's own rotation narrows it away — not a
+      // separately-timed reveal.
+      if (sameSideNext) sameSideNext.hidden = false;
 
-    if (this.sound) {
-      try {
-        this.sound.currentTime = 0;
-        this.sound.play().catch(() => {});
-      } catch (e) {
-        // Playback blocked/unsupported — fail silently.
+      turningLeaf.classList.add('book-flip__leaf--turning');
+
+      if (this.sound) {
+        try {
+          this.sound.currentTime = 0;
+          this.sound.play().catch(() => {});
+        } catch (e) {
+          // Playback blocked/unsupported — fail silently.
+        }
       }
-    }
 
-    // The turning leaf is edge-on (and hides whatever's behind it) about
-    // halfway through the turn — that's normally already true well after
-    // the next spread finished decoding, but wait on both rather than
-    // assume, so it's never revealed as a blank frame that pops in later.
-    Promise.all([this.wait(this.duration / 2), this.whenDecoded(next)]).then(() => {
-      const oldOther = forward ? current.left : current.right;
-      if (oldOther) oldOther.hidden = true;
-      if (next.left) next.left.hidden = false;
-      if (next.right) next.right.hidden = false;
-      this.spine.hidden = !(next.left && next.right);
+      // Just past the halfway point, the turning leaf's blank paper back has
+      // swept across covering the opposite side, so this swap happens
+      // underneath it — slightly past the midpoint rather than exactly on
+      // it, so the swap lands after the leaf has already started covering
+      // that side rather than right at its thinnest, edge-on instant.
+      this.wait(this.duration * 0.55).then(() => {
+        if (oppositeOld) oppositeOld.hidden = true;
+        if (oppositeNext) oppositeNext.hidden = false;
+        this.spine.hidden = !(next.left && next.right);
 
-      this.wait(this.duration / 2).then(() => {
-        turningLeaf.classList.remove('book-flip__leaf--turning');
-        turningLeaf.hidden = true;
-        this.index = targetIndex;
-        this.animating = false;
-        this.updateControls();
+        this.wait(this.duration * 0.45).then(() => {
+          turningLeaf.classList.remove('book-flip__leaf--turning');
+          turningLeaf.hidden = true;
+          this.index = targetIndex;
+          this.animating = false;
+          this.updateControls();
+        });
       });
     });
   }
