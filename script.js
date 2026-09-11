@@ -20,6 +20,14 @@
  * leaf's back face is a plain paper texture, and the next spread is
  * revealed underneath while the leaf is edge-on (and therefore invisible)
  * at the midpoint of the turn.
+ *
+ * A downloaded image isn't necessarily decoded yet — the browser can
+ * still take a moment to turn the bytes into a paintable bitmap the
+ * first time an image is actually shown, especially one that's been
+ * sitting hidden. Every image starts decoding immediately (img.decode)
+ * so that work is normally already done well before it's revealed; a
+ * turn still waits on it rather than assuming, so a page is never
+ * revealed as a blank frame that then pops in.
  */
 class BookFlip {
   /**
@@ -49,8 +57,11 @@ class BookFlip {
     this.prevBtn = root.querySelector('.book-flip__zone--prev');
     this.nextBtn = root.querySelector('.book-flip__zone--next');
 
+    this.decoded = new Map();
     leaves.forEach((leaf) => {
       leaf.style.transitionDuration = `${this.duration}ms`;
+      const img = leaf.querySelector('img');
+      this.decoded.set(leaf, img && img.decode ? img.decode().catch(() => {}) : Promise.resolve());
     });
 
     this.prevBtn.addEventListener('click', () => this.turn(-1));
@@ -72,6 +83,16 @@ class BookFlip {
   updateControls() {
     this.prevBtn.disabled = this.animating || this.index === 0;
     this.nextBtn.disabled = this.animating || this.index === this.spreads.length - 1;
+  }
+
+  whenDecoded(spread) {
+    return Promise.all(
+      [spread.left, spread.right].filter(Boolean).map((leaf) => this.decoded.get(leaf))
+    );
+  }
+
+  wait(ms) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
   turn(direction) {
@@ -97,23 +118,25 @@ class BookFlip {
       }
     }
 
-    window.setTimeout(() => {
-      // The turning leaf is edge-on (and hides whatever's behind it) right
-      // about now, so this is when the spread underneath actually changes.
+    // The turning leaf is edge-on (and hides whatever's behind it) about
+    // halfway through the turn — that's normally already true well after
+    // the next spread finished decoding, but wait on both rather than
+    // assume, so it's never revealed as a blank frame that pops in later.
+    Promise.all([this.wait(this.duration / 2), this.whenDecoded(next)]).then(() => {
       const oldOther = forward ? current.left : current.right;
       if (oldOther) oldOther.hidden = true;
       if (next.left) next.left.hidden = false;
       if (next.right) next.right.hidden = false;
       this.spine.hidden = !(next.left && next.right);
-    }, this.duration / 2);
 
-    window.setTimeout(() => {
-      turningLeaf.classList.remove('book-flip__leaf--turning');
-      turningLeaf.hidden = true;
-      this.index = targetIndex;
-      this.animating = false;
-      this.updateControls();
-    }, this.duration);
+      this.wait(this.duration / 2).then(() => {
+        turningLeaf.classList.remove('book-flip__leaf--turning');
+        turningLeaf.hidden = true;
+        this.index = targetIndex;
+        this.animating = false;
+        this.updateControls();
+      });
+    });
   }
 }
 
