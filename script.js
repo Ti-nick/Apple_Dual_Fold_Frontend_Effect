@@ -3,11 +3,19 @@
  *
  * Content is modeled as a sequence of "spreads": the front/back cover are
  * shown alone at full width, interior pages are shown two at a time
- * (a left/right pair). Turning a page always flips the *entire* visible
- * spread as one rigid card (hinged left going forward, right going back),
- * because the leaf's back face is a plain paper texture rather than the
- * next spread's artwork — the new spread is swapped in underneath while
- * the leaf is edge-on (and therefore invisible) mid-turn.
+ * (a left/right pair) on either side of a fixed center spine.
+ *
+ * Two kinds of turns:
+ *  - Interior spread <-> spread: only the page being turned animates,
+ *    hinged at the spine (the container's true center) — the opposite
+ *    page never moves. The turning leaf is half the book's width, its
+ *    front face shows the page currently on that side, and its back
+ *    face is a plain paper texture. The new spread is swapped in
+ *    underneath while the leaf is edge-on (and therefore invisible) at
+ *    the midpoint of the turn.
+ *  - Cover <-> first/last spread: the cover has no spine of its own, so
+ *    it flips open/closed as one rigid full-width card, hinged at the
+ *    book's outer edge.
  */
 class BookFlip {
   /**
@@ -39,6 +47,7 @@ class BookFlip {
     this.leftImg = root.querySelector('.book-flip__page--left');
     this.rightImg = root.querySelector('.book-flip__page--right');
     this.singleImg = root.querySelector('.book-flip__page--single');
+    this.spine = root.querySelector('.book-flip__spine');
     this.leaf = root.querySelector('.book-flip__leaf');
     this.leafFront = root.querySelector('.book-flip__leaf-face--front');
     this.prevBtn = root.querySelector('.book-flip__zone--prev');
@@ -57,12 +66,14 @@ class BookFlip {
       this.singleImg.hidden = false;
       this.leftImg.hidden = true;
       this.rightImg.hidden = true;
+      this.spine.hidden = true;
     } else {
       this.leftImg.src = spread.left;
       this.rightImg.src = spread.right;
       this.leftImg.hidden = false;
       this.rightImg.hidden = false;
       this.singleImg.hidden = true;
+      this.spine.hidden = false;
     }
   }
 
@@ -90,13 +101,27 @@ class BookFlip {
     const next = this.spreads[targetIndex];
     const forward = direction === 1;
 
-    this.buildLeafFront(current);
+    // Only a cover has no spine of its own, so only a turn touching a
+    // single (cover/back-cover) spread uses the whole-card animation;
+    // an ordinary interior turn hinges just the one page at the spine.
+    if (current.single || next.single) {
+      this.setLeafFront(current);
+      this.leaf.style.left = '0';
+      this.leaf.style.width = '100%';
+    } else if (forward) {
+      this.setLeafFrontImage(current.right);
+      this.leaf.style.left = '50%';
+      this.leaf.style.width = '50%';
+    } else {
+      this.setLeafFrontImage(current.left);
+      this.leaf.style.left = '0';
+      this.leaf.style.width = '50%';
+    }
+
     this.leaf.hidden = false;
     this.leaf.classList.toggle('book-flip__leaf--from-right', forward);
     this.leaf.classList.toggle('book-flip__leaf--from-left', !forward);
     this.leaf.style.transformOrigin = forward ? '0% 50%' : '100% 50%';
-    this.leaf.style.left = '0';
-    this.leaf.style.width = '100%';
     this.leaf.style.transform = 'rotateY(0deg)';
 
     // Force layout so the transition below animates from 0deg.
@@ -126,25 +151,31 @@ class BookFlip {
     }, this.duration);
   }
 
-  buildLeafFront(spread) {
+  setLeafFrontImage(src) {
     this.leafFront.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+    this.leafFront.appendChild(img);
+  }
+
+  setLeafFront(spread) {
     if (spread.single) {
-      const img = document.createElement('img');
-      img.src = spread.single;
-      img.alt = '';
-      this.leafFront.appendChild(img);
-    } else {
-      const left = document.createElement('img');
-      left.src = spread.left;
-      left.alt = '';
-      left.style.cssText = 'width:50%;height:100%;object-fit:cover;float:left;display:block;';
-      const right = document.createElement('img');
-      right.src = spread.right;
-      right.alt = '';
-      right.style.cssText = 'width:50%;height:100%;object-fit:cover;float:left;display:block;';
-      this.leafFront.appendChild(left);
-      this.leafFront.appendChild(right);
+      this.setLeafFrontImage(spread.single);
+      return;
     }
+    this.leafFront.innerHTML = '';
+    const left = document.createElement('img');
+    left.src = spread.left;
+    left.alt = '';
+    left.style.cssText = 'width:50%;height:100%;object-fit:cover;float:left;display:block;';
+    const right = document.createElement('img');
+    right.src = spread.right;
+    right.alt = '';
+    right.style.cssText = 'width:50%;height:100%;object-fit:cover;float:left;display:block;';
+    this.leafFront.appendChild(left);
+    this.leafFront.appendChild(right);
   }
 }
 

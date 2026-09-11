@@ -115,6 +115,28 @@ body {
   display: none;
 }
 
+/* fixed gutter shadow marking the spine between the two pages */
+.book-flip__spine {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 20px;
+  height: 100%;
+  margin-left: -10px;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.06) 40%,
+    rgba(0, 0, 0, 0.06) 60%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+}
+
+.book-flip__spine[hidden] {
+  display: none;
+}
+
 /* the animated leaf sits exactly over whichever static page is mid-flip */
 .book-flip__leaf {
   transform-style: preserve-3d;

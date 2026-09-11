@@ -13,6 +13,7 @@ Copy `index.html`, `style.css`, `script.js`, and the `assets/` folder into your 
     <img class="book-flip__page book-flip__page--left" alt="">
     <img class="book-flip__page book-flip__page--right" alt="">
     <img class="book-flip__page book-flip__page--single" alt="">
+    <div class="book-flip__spine" hidden></div>
     <div class="book-flip__leaf" hidden>
       <div class="book-flip__leaf-face book-flip__leaf-face--front"></div>
       <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
@@ -36,7 +37,7 @@ Click (or tap) the left/right half of the book to turn a page.
 
 ## How it works
 
-The cover and back cover are shown alone at full width; interior pages are shown two at a time as a left/right spread. Turning a page flips the entire visible spread as one rigid card in 3D (`rotateY`), hinged on the left edge going forward and the right edge going back. The flipping card's back face is a plain paper gradient — the next spread is swapped in underneath while the card is edge-on (and momentarily invisible) mid-turn, so no card ever needs artwork on both sides.
+The cover and back cover are shown alone at full width; interior pages are shown two at a time as a left/right spread on either side of a fixed center spine. Turning an interior page animates only that one page — hinged at the spine (`rotateY`, half the book's width) — while the opposite page never moves. Turning the cover open or closed animates the whole book as one rigid card instead, hinged at the outer edge, since a cover has no spine of its own. Either way, the flipping leaf's back face is a plain paper gradient and the next spread is swapped in underneath while the leaf is edge-on (and momentarily invisible) mid-turn, so no leaf ever needs artwork on both sides.
 
 ## Local dev
 
