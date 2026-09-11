@@ -159,29 +159,47 @@ body {
   transform: rotateY(180deg);
 }
 
-/* subtle shading near the spine while a leaf is turning */
-.book-flip__leaf-face--front::after,
-.book-flip__leaf-face--back::after {
+.book-flip__leaf-face::before,
+.book-flip__leaf-face::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.book-flip__leaf--right-slot .book-flip__leaf-face--front::after {
+/*
+ * A faint, constant gutter shadow near the spine on every resting page —
+ * present whether or not anything is turning, so it never "switches on"
+ * partway through a turn. Deliberately much fainter than the turning
+ * shading below: the same-side replacement page sits fully revealed
+ * underneath the turning leaf from the very start of a turn (see
+ * script.js), so this shadow is visible next to the turning leaf's own
+ * for the whole animation, not just a brief overlap — it has to stay
+ * subtle enough that the two stacking never reads as a sudden jump.
+ */
+.book-flip__leaf--right-slot .book-flip__leaf-face--front::before {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent 20%);
+}
+
+.book-flip__leaf--left-slot .book-flip__leaf-face--front::before {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent 20%);
+}
+
+/* stronger shading that only appears on the page actually turning */
+.book-flip__leaf--turning.book-flip__leaf--right-slot .book-flip__leaf-face--front::after {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent 35%);
 }
 
-.book-flip__leaf--left-slot .book-flip__leaf-face--front::after {
+.book-flip__leaf--turning.book-flip__leaf--left-slot .book-flip__leaf-face--front::after {
   background: linear-gradient(to left, rgba(0, 0, 0, 0.35), transparent 35%);
 }
 
 /* the back face lands on the opposite side from its own slot */
-.book-flip__leaf--right-slot .book-flip__leaf-face--back::after {
+.book-flip__leaf--turning.book-flip__leaf--right-slot .book-flip__leaf-face--back::after {
   background: linear-gradient(to left, rgba(0, 0, 0, 0.35), transparent 35%);
 }
 
-.book-flip__leaf--left-slot .book-flip__leaf-face--back::after {
+.book-flip__leaf--turning.book-flip__leaf--left-slot .book-flip__leaf-face--back::after {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent 35%);
 }
 
