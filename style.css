@@ -80,34 +80,6 @@ body {
   perspective: 2200px;
 }
 
-.book-flip__page,
-.book-flip__leaf {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 50%;
-}
-
-.book-flip__page {
-  object-fit: cover;
-  background: var(--paper-back);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-}
-
-.book-flip__page--left {
-  left: 0;
-  border-radius: 6px 0 0 6px;
-}
-
-.book-flip__page--right {
-  left: 50%;
-  border-radius: 0 6px 6px 0;
-}
-
-.book-flip__page[hidden] {
-  display: none;
-}
-
 /* fixed gutter shadow marking the spine between the two pages */
 .book-flip__spine {
   position: absolute;
@@ -130,11 +102,20 @@ body {
   display: none;
 }
 
-/* the animated leaf sits exactly over whichever static page is mid-flip */
+/*
+ * Every page is a real, always-present <img> — each sits in a fixed slot
+ * (left or right of the spine), so which direction it turns and which
+ * edge it hinges on never changes. Only the two leaves belonging to the
+ * current spread are shown; turning one adds --turning, which triggers
+ * its slot's rotation.
+ */
 .book-flip__leaf {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
   transform-style: preserve-3d;
   transition: transform 650ms cubic-bezier(0.4, 0.1, 0.2, 1);
-  pointer-events: none;
   will-change: transform;
 }
 
@@ -142,11 +123,43 @@ body {
   display: none;
 }
 
+.book-flip__leaf--turning {
+  z-index: 2;
+}
+
+.book-flip__leaf--right-slot {
+  left: 50%;
+  transform-origin: 0% 50%;
+}
+
+.book-flip__leaf--right-slot.book-flip__leaf--turning {
+  transform: rotateY(-180deg);
+}
+
+.book-flip__leaf--left-slot {
+  left: 0;
+  transform-origin: 100% 50%;
+}
+
+.book-flip__leaf--left-slot.book-flip__leaf--turning {
+  transform: rotateY(180deg);
+}
+
 .book-flip__leaf-face {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
   overflow: hidden;
+  background: var(--paper-back);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+}
+
+.book-flip__leaf--left-slot .book-flip__leaf-face {
+  border-radius: 6px 0 0 6px;
+}
+
+.book-flip__leaf--right-slot .book-flip__leaf-face {
+  border-radius: 0 6px 6px 0;
 }
 
 .book-flip__leaf-face--front img {
@@ -170,11 +183,11 @@ body {
   pointer-events: none;
 }
 
-.book-flip__leaf--from-right .book-flip__leaf-face--front::after {
+.book-flip__leaf--right-slot .book-flip__leaf-face--front::after {
   background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent 35%);
 }
 
-.book-flip__leaf--from-left .book-flip__leaf-face--front::after {
+.book-flip__leaf--left-slot .book-flip__leaf-face--front::after {
   background: linear-gradient(to left, rgba(0, 0, 0, 0.35), transparent 35%);
 }
 
