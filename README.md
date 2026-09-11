@@ -1,54 +1,37 @@
-# Book Flip Effect
+# Fold Flip Effect
 
-A dependency-free page-flip book effect built with plain HTML, CSS, and JavaScript — no React, no build step. Drop the three files into any project and it works.
+A dependency-free two-sided fold/flip effect built with plain HTML, CSS, and JavaScript — no React, no build step. Tap a panel to open it, tap again to fold it back, like a fold-phone hinge. Drop the three files into any project and it works.
 
 ## Usage
 
 Copy `index.html`, `style.css`, `script.js`, and the `assets/` folder into your project (or just `style.css` + `script.js` + your own markup and images).
 
-Write every page as a real `<img>` directly in the HTML — **not** inserted by JavaScript — so the browser starts loading all of them the moment it parses the page, in parallel with everything else, instead of only once your script has downloaded and run. Each page sits in a fixed left or right slot; alternate `--left-slot` / `--right-slot`, starting with `--right-slot` for the cover:
+Both faces are real `<img>` elements written directly in the HTML — **not** inserted by JavaScript — so the browser starts loading both immediately:
 
 ```html
-<div class="book-flip" id="book">
-  <div class="book-flip__glow"></div>
-  <div class="book-flip__stage">
-    <div class="book-flip__leaf book-flip__leaf--right-slot">
-      <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/cover.webp" alt=""></div>
-      <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
+<div class="fold-flip" id="fold">
+  <div class="fold-flip__glow"></div>
+  <div class="fold-flip__stage">
+    <div class="fold-flip__panel">
+      <div class="fold-flip__face fold-flip__face--front"><img src="assets/front.webp" alt=""></div>
+      <div class="fold-flip__face fold-flip__face--back"><img src="assets/back.webp" alt=""></div>
     </div>
-    <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-      <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-01.webp" alt=""></div>
-      <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-    </div>
-    <div class="book-flip__leaf book-flip__leaf--right-slot" hidden>
-      <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-02.webp" alt=""></div>
-      <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-    </div>
-    <!-- ...one .book-flip__leaf per interior page, alternating slots... -->
-    <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-      <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/back-cover.webp" alt=""></div>
-      <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-    </div>
-    <button class="book-flip__zone book-flip__zone--prev" aria-label="Previous page"></button>
-    <button class="book-flip__zone book-flip__zone--next" aria-label="Next page"></button>
+    <button class="fold-flip__zone" aria-label="Open or close"></button>
   </div>
 </div>
 ```
 
 ```js
-new BookFlip(document.getElementById('book'), {
+new FoldFlip(document.getElementById('fold'), {
   flipSound: 'assets/page-flip.mp3', // optional
-  duration: 650, // optional, ms
 });
 ```
 
-Click (or tap) the left/right half of the book to turn a page. See `index.html` for a full 12-page example.
+Tap the panel to open it (front → back), tap again to close it (back → front).
 
 ## How it works
 
-Every page is a real `<img>` already sitting in the DOM, not created or given a `src` by JavaScript — that's the whole trick to avoiding a visible load flash: the browser's own preload scanner discovers and starts fetching every page as soon as it parses the HTML, well before `script.js` even downloads.
-
-Content is a sequence of spreads, each with a left and/or right page — the cover is a spread with only a right page (nothing precedes it) and the back cover has only a left page (nothing follows it), so they're already sized and positioned like a single interior page rather than a wide double-page card. Each page's slot (left or right) is fixed, so its hinge edge and turn direction are baked into CSS rather than computed per turn. Turning a page always animates exactly one page — hinged at the book's true center (`rotateY`) — while the opposite page never moves. Each leaf's back face is a plain paper gradient, and the next spread is revealed underneath while the leaf is edge-on (and momentarily invisible) mid-turn, so no leaf ever needs artwork on both sides.
+There's exactly one panel. Its front and back faces sit on the same element, hinged at its own left edge (`rotateY`, `backface-visibility: hidden`); toggling a class rotates it 180° one way to open and 180° back to close. Since both faces are real, already-loaded images on that one element rather than separate elements being swapped or revealed, there's no timing edge case to get wrong — nothing to reveal underneath, nothing that can show up mid-flip as a loading flash.
 
 ## Local dev
 

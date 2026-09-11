@@ -3,78 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Book Flip Effect</title>
+<title>Fold Flip Effect</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="page">
     <div class="intro">
       <p class="eyebrow">A Dependency-Free Effect</p>
-      <h1>Book Flip</h1>
-      <p>A page-flip book effect built with plain HTML, CSS, and JavaScript. Click either side of the book to turn a page.</p>
+      <h1>Fold Flip</h1>
+      <p>A two-sided fold/flip effect built with plain HTML, CSS, and JavaScript. Tap the panel to open it, tap again to fold it back.</p>
     </div>
 
-    <div class="book-flip" id="book">
-      <div class="book-flip__glow"></div>
-      <div class="book-flip__stage">
+    <div class="fold-flip" id="fold">
+      <div class="fold-flip__glow"></div>
+      <div class="fold-flip__stage">
         <!--
-          Every page is a real <img> written directly into the page, not
-          inserted by JavaScript, so the browser starts loading all of
-          them the moment it parses this HTML — well before script.js
-          even downloads. Each sits in a fixed left/right slot (its role
-          never changes), and script.js only ever shows/hides them and
-          triggers their turn; it never sets a `src`.
+          Both faces are real <img> elements written directly into the
+          page, not inserted by JavaScript, so the browser starts loading
+          both immediately. There's only ever this one panel — opening and
+          closing just rotates it 180° back and forth.
         -->
-        <div class="book-flip__leaf book-flip__leaf--right-slot">
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/cover.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
+        <div class="fold-flip__panel">
+          <div class="fold-flip__face fold-flip__face--front"><img src="assets/front.webp" alt=""></div>
+          <div class="fold-flip__face fold-flip__face--back"><img src="assets/back.webp" alt=""></div>
         </div>
-        <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-01.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--right-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-02.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-03.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--right-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-04.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-05.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--right-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-06.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-07.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--right-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-08.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-09.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--right-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/page-10.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <div class="book-flip__leaf book-flip__leaf--left-slot" hidden>
-          <div class="book-flip__leaf-face book-flip__leaf-face--front"><img src="assets/back-cover.webp" alt=""></div>
-          <div class="book-flip__leaf-face book-flip__leaf-face--back"></div>
-        </div>
-        <button class="book-flip__zone book-flip__zone--prev" aria-label="Previous page"></button>
-        <button class="book-flip__zone book-flip__zone--next" aria-label="Next page"></button>
+        <button class="fold-flip__zone" aria-label="Open or close"></button>
       </div>
     </div>
   </div>
